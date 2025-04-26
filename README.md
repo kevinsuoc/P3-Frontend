@@ -48,3 +48,66 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+## Instrucciones
+
+### Crear el proyecto
+
+```bash
+npx create-expo-app@latest
+```
+
+### Instalar EAS
+
+```bash
+npm install -g eas-cli
+```
+
+### Expo Login
+
+- Crear cuenta de Expo
+- Iniciar sessión
+
+```bash
+eas login
+```
+
+### Configurar
+
+```bash
+eas build:configure
+```
+
+
+### Instalar firebase modules
+
+```bash
+npx expo install @react-native-firebase/app
+npx expo install @react-native-firebase/firestore
+```
+
+### Crear Prebuild
+
+```bash
+npx expo prebuild
+```
+
+esto nos deberia crear la carpeta android, colocar el JSON de firestore ahí
+
+### Modificar plugins
+
+en expo{ android: } colocar "googleServicesFile": "./android/app/google-services.json"
+
+en plugins colocar el "@react-native-firebase/app"
+
+### Instlar expo dev client
+
+```bash
+npx expo install expo-dev-client
+```
+
+### Crear build
+
+```bash
+eas build --platform android --profile development
+```
