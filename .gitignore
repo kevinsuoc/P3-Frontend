@@ -40,3 +40,6 @@ app-example
 # prettier
 .prettierignore
 .prettierrc
+
+android/app/google-services.json
+android/app/google-services.json
