@@ -71,7 +71,11 @@ export default function index() {
   }
 
   const updateFilter = (n: string, p: string) => {
-    router.setParams({posicion: p, nombre: n, });
+    if (n && p)
+      router.setParams({posicion: p, nombre: n, });
+    else if (p)
+      router.setParams({posicion: p, nombre: ""});
+
     filtarJugadores(n, p, jugadores);
   }
 
@@ -107,16 +111,19 @@ export default function index() {
         placeholder="Nombre o Apellido"
       />
       <Picker 
-        onValueChange={(posicion: string) => {setPosicionField(posicion); updateFilter(nombreField, posicion)}}
-        selectedValue={posicion as string}
+          onValueChange={(posicion: string) => {setPosicionField(posicion); updateFilter(nombreField, posicion)}}
+          selectedValue={posicion as string}
+          style={{ height: 50, width: 150 }}
+          itemStyle={{ color: "black" }}
       >
-        <Picker.Item label="Todos" value="" />
-        <Picker.Item label="Alero" value="Alero" />
-        <Picker.Item label="Base" value="Base" />
-        <Picker.Item label="Escolta" value="Escolta" />
-        <Picker.Item label="Pivot" value="Pivot" />
-        <Picker.Item label="Ala-Pivot" value="Ala-Pivot" />
+          <Picker.Item label="Todos" value="" />
+          <Picker.Item label="Alero" value="Alero" />
+          <Picker.Item label="Base" value="Base" />
+          <Picker.Item label="Escolta" value="Escolta" />
+          <Picker.Item label="Pivot" value="Pivot" />
+          <Picker.Item label="Ala-Pivot" value="Ala-Pivot" />
       </Picker>
+
       <FlatList
         data={jugadoresFiltrados}
         renderItem={jugadorRender} 
