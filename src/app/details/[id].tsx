@@ -5,23 +5,28 @@ import { useState, useEffect } from 'react';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
 import Cargando from '@/src/componentes/Cargando';
 import { defaultJugadorImage } from '@/src/app.config';
+import firestore from '@react-native-firebase/firestore';
 
 export default function Detalle() {
     const [jugador, setJugador] = useState<Jugador | null>(null);
     const { id } = useLocalSearchParams<{ id: string }>();
 
-    // Web
     useEffect(() => {
-        if (!(Platform.OS === 'web'))
-            return;
-        
-        async function getJugador() {
+        async function getJugadorWeb() {
             const docRef = doc(getFirestore(), 'jugadores', id);
             const j = await getDoc(docRef);
             setJugador(j.data() as Jugador);
         }
-        getJugador();
 
+        async function getJugadorMobile() {
+            const j = await firestore().collection('jugadores').doc(id).get();
+            setJugador(j.data() as Jugador);
+        }
+    
+        if (Platform.OS === "web")
+            getJugadorWeb();
+        else
+            getJugadorMobile();
     }, []);
     
     if (jugador == null)

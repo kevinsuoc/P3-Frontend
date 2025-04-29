@@ -7,6 +7,7 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import Cargando from "../componentes/Cargando";
 import { defaultJugadorImage } from "../app.config";
 import { Picker } from '@react-native-picker/picker';
+import firestore from '@react-native-firebase/firestore';
 
 export default function index() {
   const router = useRouter();
@@ -16,11 +17,7 @@ export default function index() {
   const [posicionField, setPosicionField] = useState<string>('');
   const { posicion, nombre } = useLocalSearchParams();
 
-  // Web
   useEffect(() => {
-    if (!(Platform.OS === 'web'))
-      return ;
-
     function onResult(QuerySnapshot: any) {
       const jugadoresData: Jugador[] = [];
 
@@ -40,9 +37,12 @@ export default function index() {
     
     function onError(error: any) {console.error(error);}
     
-    const subscriber = onSnapshot(collection(getFirestore(), 'jugadores'), onResult, onError);
-    
-    return () => subscriber();
+    let subscriber: any;
+    if (Platform.OS === "web")
+      subscriber = onSnapshot(collection(getFirestore(), 'jugadores'), onResult, onError);
+    else
+      subscriber = firestore().collection('jugadores').onSnapshot(onResult, onError);
+    return () => subscriber();  
   }, [])
 
   const separator = () => (
