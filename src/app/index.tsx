@@ -1,16 +1,20 @@
-import { Text, View, FlatList, Pressable, StyleSheet, Image } from "react-native";
+import { Text, View, FlatList, Pressable, StyleSheet, Image, TextInput } from "react-native";
 import { Jugador } from '../jugador'
 import { useEffect, useState } from "react";
 import { Platform } from 'react-native';
 import { getFirestore, collection, onSnapshot } from 'firebase/firestore';
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import Cargando from "../componentes/Cargando";
 import { defaultJugadorImage } from "../app.config";
+import { Picker } from '@react-native-picker/picker';
 
 export default function index() {
-  const [jugadores, setJugadores] = useState<Jugador[]>([]);
-  const [jugadorSelectedId, setJugadorSelectedId] = useState<String>('');
   const router = useRouter();
+  const [jugadores, setJugadores] = useState<Jugador[]>([]);
+  const [jugadoresFiltrados, setJugadoresFiltrados] = useState<Jugador[]>([]);
+  const [nombreField, setNombreField] = useState<string>('');
+  const [posicionField, setPosicionField] = useState<string>('');
+  const { posicion, nombre } = useLocalSearchParams();
 
   // Web
   useEffect(() => {
@@ -28,17 +32,17 @@ export default function index() {
         });
       });
       
+      setNombreField(nombre as string)
+      setPosicionField(posicion as string)
       setJugadores(jugadoresData);
+      filtarJugadores(nombre as string, posicion as string, jugadoresData);
     }
     
-    function onError(error: any) {
-      console.error(error);
-    }
+    function onError(error: any) {console.error(error);}
     
     const subscriber = onSnapshot(collection(getFirestore(), 'jugadores'), onResult, onError);
     
     return () => subscriber();
-  
   }, [])
 
   const separator = () => (
@@ -51,13 +55,28 @@ export default function index() {
     />
   );
 
-  const handlePress = (jugador: Jugador) => {
-    setJugadorSelectedId(jugador.id)
-    router.navigate(`/details/${jugador.id}`)
+  const handleJugadorPress = (jugador: Jugador) => {router.navigate(`/details/${jugador.id}`)}
+
+  const filtarJugadores = (nombre: string, posicion: string, jugadores: Jugador[]) => {
+    const filtrados: Jugador[] = jugadores.filter((jugador) => {
+      const normalize = (str: string) => str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+      const nombreMatch = nombre ? normalize(jugador.Nombre).includes(normalize(nombre)): true;
+      const posicionMatch = posicion ? normalize(jugador.Posicion).includes(normalize(posicion)): true;
+
+      return nombreMatch && posicionMatch;
+    });
+
+    setJugadoresFiltrados(filtrados)
+  }
+
+  const updateFilter = (n: string, p: string) => {
+    router.setParams({posicion: p, nombre: n, });
+    filtarJugadores(n, p, jugadores);
   }
 
   const jugadorRender = ({ item }: { item: Jugador }) => (  
-    <Pressable onPress={() => handlePress(item)}>
+    <Pressable onPress={() => handleJugadorPress(item)}>
     <View>
       <Image 
           style={styles.logo}
@@ -82,8 +101,24 @@ export default function index() {
         alignItems: "center",
       }}
     >
+      <TextInput
+        onChangeText={(nombre: string) => {setNombreField(nombre); updateFilter(nombre, posicionField)}}
+        value={nombre as string}
+        placeholder="Nombre o Apellido"
+      />
+      <Picker 
+        onValueChange={(posicion: string) => {setPosicionField(posicion); updateFilter(nombreField, posicion)}}
+        selectedValue={posicion as string}
+      >
+        <Picker.Item label="Todos" value="" />
+        <Picker.Item label="Alero" value="Alero" />
+        <Picker.Item label="Base" value="Base" />
+        <Picker.Item label="Escolta" value="Escolta" />
+        <Picker.Item label="Pivot" value="Pivot" />
+        <Picker.Item label="Ala-Pivot" value="Ala-Pivot" />
+      </Picker>
       <FlatList
-        data={jugadores}
+        data={jugadoresFiltrados}
         renderItem={jugadorRender} 
         keyExtractor={(jugador: Jugador) => jugador.id}
         style={{ marginTop: 20, width: '80%' }}

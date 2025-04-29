@@ -6,8 +6,7 @@ import { getFirestore, doc, getDoc } from 'firebase/firestore';
 import Cargando from '@/src/componentes/Cargando';
 import { defaultJugadorImage } from '@/src/app.config';
 
-export default function detalle() {
-    const router = useRouter();
+export default function Detalle() {
     const [jugador, setJugador] = useState<Jugador | null>(null);
     const { id } = useLocalSearchParams<{ id: string }>();
 
@@ -21,27 +20,36 @@ export default function detalle() {
             const j = await getDoc(docRef);
             setJugador(j.data() as Jugador);
         }
-        
         getJugador();
+
     }, []);
     
-    const handlePress = () => {
-        router.navigate(`/multimedia/${encodeURIComponent(jugador!.Video? jugador!.Video : "novideo")}`)
-    }
-  
     if (jugador == null)
         return  <Cargando />;
+    else
+        return <DetalleComponent jugador={jugador} />
+}
 
-    const imageUrl = jugador.Image? jugador.Image: defaultJugadorImage;
-    console.log(imageUrl)
-    return (
+function DetalleComponent({jugador}: {jugador: Jugador}){
+    const router = useRouter();
+    const imageUrl = jugador.Image ? jugador.Image : defaultJugadorImage;
+
+    const verVideoPress = () => {
+        router.navigate(`/multimedia/${encodeURIComponent(jugador.Video ? jugador.Video : "novideo")}`);
+    };
+
+    const imagePress = () => {
+        router.navigate(`./image/${encodeURIComponent(imageUrl)}`);
+    }
+
+    return  (
     <View style={styles.container}>
-        <Image 
-            style={styles.logo}
-            source={{
-                uri: imageUrl,
-            }}
-        />
+        <Pressable onPress={() => imagePress()}>
+            <Image 
+                style={styles.logo}
+                source={{uri: imageUrl}}
+            />
+        </Pressable>
         <Text>Nombre: {jugador.Nombre}</Text>
         <Text>Dorsal: {jugador.Dorsal}</Text>
         <Text>Posicion: {jugador.Posicion}</Text>
@@ -50,7 +58,7 @@ export default function detalle() {
         <Text>Nacionalidad: {jugador.Nacionalidad}</Text>
         <Text>Descripcion: {jugador.Descripcion}</Text>
 
-        <Pressable onPress={() => handlePress()}>
+        <Pressable onPress={() => verVideoPress()}>
             <Text>Ver video</Text>
         </Pressable>
     </View>

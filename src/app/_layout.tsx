@@ -26,7 +26,7 @@ export default function RootLayout() {
     <Stack>
       <Stack.Screen 
         name="index" 
-        options={{ title: 'Lista', headerRight: () => <HomeButton /> }} 
+        options={{ title: 'FrontMobi', headerRight: () => <HomeButton /> }} 
       />
       <Stack.Screen 
         name="details/[id]" 
@@ -35,6 +35,10 @@ export default function RootLayout() {
       <Stack.Screen 
         name="multimedia/[id]" 
         options={{ title: 'Multimedia', headerRight: () => <HomeButton /> }} 
+      />
+      <Stack.Screen 
+        name="details/image/[url]" 
+        options={{ title: 'Imagen de perfil', headerRight: () => <HomeButton /> }} 
       />
     </Stack>
   );
