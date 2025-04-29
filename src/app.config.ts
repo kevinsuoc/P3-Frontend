@@ -8,3 +8,5 @@ export const firebaseConfig = {
     authDomain: "uoc-frontmobi.firebaseapp.com", 
     messagingSenderId: "892525709028" 
 }
+
+export const defaultJugadorImage = 'https://res.cloudinary.com/dt32twhnq/image/upload/v1744402427/default_ine6rb.webp'

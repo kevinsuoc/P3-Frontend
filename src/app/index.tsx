@@ -1,13 +1,13 @@
-import { Text, View, FlatList, Pressable, Button } from "react-native";
+import { Text, View, FlatList, Pressable, StyleSheet, Image } from "react-native";
 import { Jugador } from '../jugador'
-import { firebaseConfig } from '../firebase.config';
 import { useEffect, useState } from "react";
-import { getApps, initializeApp } from '@react-native-firebase/app';
 import { Platform } from 'react-native';
 import { getFirestore, collection, onSnapshot } from 'firebase/firestore';
 import { useRouter } from "expo-router";
+import Cargando from "../componentes/Cargando";
+import { defaultJugadorImage } from "../app.config";
 
-export default function Render() {
+export default function index() {
   const [jugadores, setJugadores] = useState<Jugador[]>([]);
   const [jugadorSelectedId, setJugadorSelectedId] = useState<String>('');
   const router = useRouter();
@@ -16,9 +16,6 @@ export default function Render() {
   useEffect(() => {
     if (!(Platform.OS === 'web'))
       return ;
-
-    if (getApps().length == 0)
-      initializeApp(firebaseConfig);
 
     function onResult(QuerySnapshot: any) {
       const jugadoresData: Jugador[] = [];
@@ -56,27 +53,26 @@ export default function Render() {
 
   const handlePress = (jugador: Jugador) => {
     setJugadorSelectedId(jugador.id)
-    router.navigate('/details');
-    console.log("Selected: ", jugadores.find((j: Jugador) => j.id === jugador.id))
+    router.navigate(`/details/${jugador.id}`)
   }
 
-  const jugadorRender = ({ item }: { item: Jugador }) => (
-    <Pressable
-      onPress={() => handlePress(item)}
-      style={({ pressed }: any) => [
-        {
-          padding: 10,
-          backgroundColor: pressed || jugadorSelectedId === item.id ? '#D3D3D3' : 'transparent',
-          borderRadius: 5,
-          marginVertical: 5,
-        },
-      ]}
-    >
+  const jugadorRender = ({ item }: { item: Jugador }) => (  
+    <Pressable onPress={() => handlePress(item)}>
     <View>
+      <Image 
+          style={styles.logo}
+          source={{
+              uri: item.Image? item.Image: defaultJugadorImage,
+          }}
+      />
       <Text>Jugador Nº {item.Dorsal} - {item.Nombre}</Text>
     </View>
     </Pressable>
   );
+
+  
+  if (jugadores.length === 0)
+    return  <Cargando />;
 
   return (
     <View
@@ -96,3 +92,12 @@ export default function Render() {
     </View>
   );
 }
+
+
+const styles = StyleSheet.create({
+    logo: {
+      width: 50, 
+      height: 50,
+      resizeMode: 'contain',
+    },
+  });

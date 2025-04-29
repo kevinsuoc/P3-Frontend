@@ -1,5 +1,6 @@
 {
   "extends": "expo/tsconfig.base",
+  "jsk": "react",
   "compilerOptions": {
     "strict": true,
     "paths": {
