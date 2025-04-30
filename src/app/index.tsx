@@ -8,6 +8,7 @@ import Cargando from "../componentes/Cargando";
 import { defaultJugadorImage } from "../app.config";
 import { Picker } from '@react-native-picker/picker';
 import firestore from '@react-native-firebase/firestore';
+import { indexStyles, indexStyles as listadoStyles } from "../componentes/styles/indexStyles";
 
 export default function index() {
   const router = useRouter();
@@ -45,18 +46,6 @@ export default function index() {
     return () => subscriber();  
   }, [])
 
-  const separator = () => (
-    <View
-      style={{
-        height: 1,
-        backgroundColor: '#cccccc',
-        marginVertical: 10,
-      }}
-    />
-  );
-
-  const handleJugadorPress = (jugador: Jugador) => {router.navigate(`/details/${jugador.id}`)}
-
   const filtarJugadores = (nombre: string, posicion: string, jugadores: Jugador[]) => {
     const filtrados: Jugador[] = jugadores.filter((jugador) => {
       const normalize = (str: string) => str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -79,17 +68,20 @@ export default function index() {
     filtarJugadores(n, p, jugadores);
   }
 
+  const handleJugadorPress = (jugador: Jugador) => {router.navigate(`/details/${jugador.id}`)}
+
   const jugadorRender = ({ item }: { item: Jugador }) => (  
     <Pressable onPress={() => handleJugadorPress(item)}>
-    <View>
-      <Image 
-          style={styles.logo}
-          source={{
-              uri: item.Image? item.Image: defaultJugadorImage,
-          }}
-      />
-      <Text>Jugador Nº {item.Dorsal} - {item.Nombre}</Text>
-    </View>
+      <View style={listadoStyles.jugadorView}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <Image 
+              style={listadoStyles.logoJugador}
+              source={{ uri: item.Image? item.Image: defaultJugadorImage, }}
+          />
+          <Text style={{marginLeft: 10, fontSize: 20, fontWeight: '700', color: "#224c7e",}}>{item.Dorsal}</Text>
+        </View>
+        <Text style={{fontSize: 20, fontWeight: '500'}}>{item.Nombre}</Text>
+      </View>
     </Pressable>
   );
 
@@ -98,13 +90,7 @@ export default function index() {
     return  <Cargando />;
 
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
+    <View style={indexStyles.mainView}>
       <TextInput
         onChangeText={(nombre: string) => {setNombreField(nombre); updateFilter(nombre, posicionField)}}
         value={nombre as string}
@@ -128,18 +114,9 @@ export default function index() {
         data={jugadoresFiltrados}
         renderItem={jugadorRender} 
         keyExtractor={(jugador: Jugador) => jugador.id}
-        style={{ marginTop: 20, width: '80%' }}
-        ItemSeparatorComponent={separator}  
+        style={listadoStyles.elementoListaJugador}
+        ItemSeparatorComponent={() => <View style={listadoStyles.separador} />}  
       />
     </View>
   );
 }
-
-
-const styles = StyleSheet.create({
-    logo: {
-      width: 50, 
-      height: 50,
-      resizeMode: 'contain',
-    },
-  });
