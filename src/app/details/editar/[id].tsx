@@ -1,18 +1,18 @@
-import { Picker } from "@react-native-picker/picker";
-import { useState } from "react";
-import { Button, Text, TextInput, View, Modal, Platform } from "react-native";
+import { useState, useEffect } from "react";
+import { useLocalSearchParams } from "expo-router";
 import { Jugador } from "@/src/jugador";
-import { useRouter } from "expo-router";
-import { firestoreAgregarJugador } from "@/src/database/jugadorQueries";
+import { Platform, View, Modal, Text, Button, TextInput } from "react-native";
+import { firestoreGetJugador, firestoreActualizarJugador } from "@/src/database/jugadorQueries";
+import Cargando from "@/src/componentes/Cargando";
+import { Picker } from "@react-native-picker/picker";
 import { validarJugador } from "@/src/validar/validarJugador";
 
-export default function Agregar() {
-    const router = useRouter();
-
+export default function Editar() {
     const [modalVisible, setModalVisible] = useState(false);
     const [modalText, setModalText] = useState<string>('');
-    const [jugadorAgregado, setJugadorAgregado] = useState<boolean>(false);
-
+    const [jugador, setJugador] = useState<Jugador | null>(null);
+    const { id } = useLocalSearchParams<{ id: string }>();
+    
     const [nombreField, setNombreField] = useState<string>('');
     const [posicionField, setPosicionField] = useState<string>('');
     const [dorsalField, setDorsalField] = useState<string>('');
@@ -20,9 +20,28 @@ export default function Agregar() {
     const [nacionalidadField, setNacionalidadField] = useState<string>('');
     const [descripcionField, setDescripcionField] = useState<string>('');
     const [alturaField, setAlturaField] = useState<string>('');
+    
 
-    const agregarJugador = () => {
-        const jugador: Jugador = {
+    useEffect(() => {
+            firestoreGetJugador(Platform.OS, id)
+            .then((data) => {
+                if (!data)
+                    throw {error: "Jugador no encontrado"};
+                setNombreField(data.Nombre);
+                setPosicionField(data.Posicion);
+                setDorsalField(String(data.Dorsal));
+                setEdadField(String(data.Edad));
+                setNacionalidadField(data.Nacionalidad);
+                setDescripcionField(data.Descripcion);
+                setAlturaField(data.Altura);
+                setJugador(data);
+            })
+            .catch((err) => {console.log(err); setJugador(null)});
+    }, []);
+
+    const actualizarJugador = () => {
+        const j: Jugador = {
+            id: jugador!.id,
             Nombre:nombreField,
             Dorsal:Number(dorsalField),
             Descripcion:descripcionField,
@@ -31,8 +50,8 @@ export default function Agregar() {
             Posicion:posicionField,
             Edad:Number(edadField),
         }
-    
-        const errores: string[] = validarJugador(jugador);
+
+        const errores: string[] = validarJugador(j);
 
         if (errores.length > 0)
         {
@@ -41,14 +60,20 @@ export default function Agregar() {
             return ;
         }
 
-        setModalText("Agregando jugador...")
-        setJugadorAgregado(true)
+        setModalText("Actualizando jugador...")
         setModalVisible(true)
 
-        firestoreAgregarJugador(Platform.OS, jugador)
-        .then(() => {setModalText("Jugador Agregado")})
-        .catch(() => {setModalText("No se pudo agregar el jugador")})
+        firestoreActualizarJugador(Platform.OS, j)
+        .then((data) => {
+            if (data)
+                setModalText("Jugador actualizado")
+            else
+                setModalText("No se pudo actualizar")})
+        .catch(() => {setModalText("No se pudo actualizar el jugador")})
     }
+
+    if (jugador == null)
+        return <Cargando/>
 
     return (
         <View>
@@ -62,7 +87,7 @@ export default function Agregar() {
                 <View style={{ flex:1, justifyContent:'center', alignItems:'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
                     <View style={{ padding:20, backgroundColor: 'white', borderRadius: 10 }}>
                         <Text>{modalText}</Text>
-                        <Button title="Cerrar" onPress={() => { setModalVisible(false); if (jugadorAgregado) router.back()}} />
+                        <Button title="Cerrar" onPress={() => {setModalVisible(false)}} />
                     </View>
                 </View>
             </Modal>
@@ -109,7 +134,7 @@ export default function Agregar() {
                 <Picker.Item label="Pivot" value="Pivot" />
                 <Picker.Item label="Ala-Pivot" value="Ala-Pivot" />
             </Picker>
-            <Button onPress={agregarJugador} title="Agregar jugador"></Button>
+            <Button onPress={actualizarJugador} title="Actualizar"></Button>
         </View>
-    );
+    )
 }

@@ -4,7 +4,7 @@ export interface Jugador {
   Dorsal: number;
   Posicion: string;
   Edad: number;
-  Altura: number;
+  Altura: string;
   Nacionalidad: string;
   Descripcion: string;
   Image?: string;

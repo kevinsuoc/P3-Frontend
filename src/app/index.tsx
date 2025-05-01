@@ -8,8 +8,7 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import Cargando from "../componentes/Cargando";
 import { defaultJugadorImage } from "../app.config";
 import { Picker } from '@react-native-picker/picker';
-import { indexStyles, indexStyles as listadoStyles } from "../componentes/styles/indexStyles";
-import { Modal } from "react-native";
+import { indexStyles, indexStyles as listadoStyles } from "../styles/indexStyles";
 
 export default function index() {
   const router = useRouter();

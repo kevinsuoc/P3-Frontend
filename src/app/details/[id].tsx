@@ -2,42 +2,18 @@ import { View, Text, StyleSheet, Platform, Pressable, Image, Modal, Button } fro
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Jugador } from '@/src/jugador';
 import { useState, useEffect } from 'react';
-import { getFirestore, doc, getDoc, deleteDoc } from 'firebase/firestore';
 import Cargando from '@/src/componentes/Cargando';
 import { defaultJugadorImage } from '@/src/app.config';
-import firestore from '@react-native-firebase/firestore';
+import { firestoreGetJugador, firestoreBorrarJugador } from '@/src/database/jugadorQueries';
 
 export default function Detalle() {
     const [jugador, setJugador] = useState<Jugador | null>(null);
     const { id } = useLocalSearchParams<{ id: string }>();
 
     useEffect(() => {
-        async function getJugadorWeb() {
-            const docRef = doc(getFirestore(), 'jugadores', id);
-            const j = await getDoc(docRef);
-            const jugador = j.data()
-            if (jugador)
-            {
-                jugador!.id = id;
-                setJugador(jugador! as Jugador);    
-            }
-        }
-
-        async function getJugadorMobile() {
-            const j = await firestore().collection('jugadores').doc(id).get();
-            const jugador = j.data()
-            jugador!.id = id;
-            if (jugador)
-            {
-                jugador!.id = id;
-                setJugador(jugador! as Jugador);    
-            }       
-        }
-    
-        if (Platform.OS === "web")
-            getJugadorWeb();
-        else
-            getJugadorMobile();
+        firestoreGetJugador(Platform.OS, id)
+        .then((data) => {setJugador(data)})
+        .catch((err) => {console.log(err); setJugador(null)});
     }, []);
     
     if (jugador == null)
@@ -60,14 +36,11 @@ function DetalleComponent({jugador}: {jugador: Jugador}){
     }
 
     const borrarJugador = () => {
-        if (Platform.OS === "web")
-            deleteDoc(doc(getFirestore(), "jugadores", jugador.id!))
-            .then(() => router.back())
-            .catch((error) => console.error("Error deleting document: ", error));
-        else 
-            firestore().collection("jugadores").doc(jugador.id!).delete()
-            .then(() => router.back())
-            .catch((error) => console.error("Error deleting document: ", error));
+        if (!jugador?.id)
+            return
+        firestoreBorrarJugador(Platform.OS, jugador.id)
+        .then(() => router.back())
+        .catch((err) => console.error("Error deleting document: ", err));   
     }
 
     return  (
@@ -102,9 +75,8 @@ function DetalleComponent({jugador}: {jugador: Jugador}){
         <Text>Nacionalidad: {jugador.Nacionalidad}</Text>
         <Text>Descripcion: {jugador.Descripcion}</Text>
         <Button title="Borrar" onPress={() => setBorrarModalVisible(true)} />
-        <Pressable onPress={() => verVideoPress()}>
-            <Text>Ver video</Text>
-        </Pressable>
+        <Button title="Editar" onPress={() => {router.navigate(`./editar/${jugador.id}`)}} />
+        <Button title="Ver video"  onPress={() => verVideoPress()} />
     </View>
     );
 }

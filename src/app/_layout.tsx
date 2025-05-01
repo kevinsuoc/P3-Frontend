@@ -44,6 +44,10 @@ export default function RootLayout() {
         name="(agregar)/agregar"
         options={{title: 'Añadir jugador', headerRight: () => <HomeButton/>}}
       />
+      <Stack.Screen 
+        name="details/editar/[id]"
+        options={{title: 'Editar jugador', headerRight: () => <HomeButton/>}}
+      />
     </Stack>
   );
 }
