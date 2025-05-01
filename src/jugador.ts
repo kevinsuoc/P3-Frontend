@@ -1,5 +1,5 @@
 export interface Jugador {
-  id: string;
+  id?: string;
   Nombre: string;
   Dorsal: number;
   Posicion: string;

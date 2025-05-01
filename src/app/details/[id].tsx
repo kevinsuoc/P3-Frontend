@@ -1,8 +1,8 @@
-import { View, Text, StyleSheet, Platform, Pressable, Image } from 'react-native';
+import { View, Text, StyleSheet, Platform, Pressable, Image, Modal, Button } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Jugador } from '@/src/jugador';
 import { useState, useEffect } from 'react';
-import { getFirestore, doc, getDoc } from 'firebase/firestore';
+import { getFirestore, doc, getDoc, deleteDoc } from 'firebase/firestore';
 import Cargando from '@/src/componentes/Cargando';
 import { defaultJugadorImage } from '@/src/app.config';
 import firestore from '@react-native-firebase/firestore';
@@ -15,12 +15,23 @@ export default function Detalle() {
         async function getJugadorWeb() {
             const docRef = doc(getFirestore(), 'jugadores', id);
             const j = await getDoc(docRef);
-            setJugador(j.data() as Jugador);
+            const jugador = j.data()
+            if (jugador)
+            {
+                jugador!.id = id;
+                setJugador(jugador! as Jugador);    
+            }
         }
 
         async function getJugadorMobile() {
             const j = await firestore().collection('jugadores').doc(id).get();
-            setJugador(j.data() as Jugador);
+            const jugador = j.data()
+            jugador!.id = id;
+            if (jugador)
+            {
+                jugador!.id = id;
+                setJugador(jugador! as Jugador);    
+            }       
         }
     
         if (Platform.OS === "web")
@@ -38,6 +49,7 @@ export default function Detalle() {
 function DetalleComponent({jugador}: {jugador: Jugador}){
     const router = useRouter();
     const imageUrl = jugador.Image ? jugador.Image : defaultJugadorImage;
+    const [borrarModalVisible, setBorrarModalVisible] = useState<boolean>(false);
 
     const verVideoPress = () => {
         router.navigate(`/multimedia/${encodeURIComponent(jugador.Video ? jugador.Video : "novideo")}`);
@@ -47,8 +59,35 @@ function DetalleComponent({jugador}: {jugador: Jugador}){
         router.navigate(`./image/${encodeURIComponent(imageUrl)}`);
     }
 
+    const borrarJugador = () => {
+        if (Platform.OS === "web")
+            deleteDoc(doc(getFirestore(), "jugadores", jugador.id!))
+            .then(() => router.back())
+            .catch((error) => console.error("Error deleting document: ", error));
+        else 
+            firestore().collection("jugadores").doc(jugador.id!).delete()
+            .then(() => router.back())
+            .catch((error) => console.error("Error deleting document: ", error));
+    }
+
     return  (
     <View style={styles.container}>
+        <Modal
+            animationType="slide"
+            transparent={true}
+            visible={borrarModalVisible}
+            onRequestClose={() => {setBorrarModalVisible(!borrarModalVisible);}}
+            style={{backgroundColor: "black"}}
+        >
+            <View style={{ flex:1, justifyContent:'center', alignItems:'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                <View style={{ padding:20, backgroundColor: 'white', borderRadius: 10 }}>
+                    <Text>"Desea eliminar este jugador?"</Text>
+                    <Button title="Aceptar" onPress={() => {borrarJugador()}} />
+                    <Button title="Cancelar" onPress={() => {setBorrarModalVisible(false)}} />
+                </View>
+            </View>
+        </Modal>
+
         <Pressable onPress={() => imagePress()}>
             <Image 
                 style={styles.logo}
@@ -62,7 +101,7 @@ function DetalleComponent({jugador}: {jugador: Jugador}){
         <Text>Altura: {jugador.Altura}</Text>
         <Text>Nacionalidad: {jugador.Nacionalidad}</Text>
         <Text>Descripcion: {jugador.Descripcion}</Text>
-
+        <Button title="Borrar" onPress={() => setBorrarModalVisible(true)} />
         <Pressable onPress={() => verVideoPress()}>
             <Text>Ver video</Text>
         </Pressable>

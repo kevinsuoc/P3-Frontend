@@ -1,10 +1,17 @@
 import { Picker } from "@react-native-picker/picker";
 import { useState } from "react";
-import { Button, Text, TextInput, View, Modal } from "react-native";
+import { Button, Text, TextInput, View, Modal, Platform } from "react-native";
+import firestore from '@react-native-firebase/firestore';
+import { getFirestore, collection, addDoc } from 'firebase/firestore'
+import { Jugador } from "@/src/jugador";
+import { useRouter } from "expo-router";
 
 export default function Agregar() {
+    const router = useRouter();
+
     const [modalVisible, setModalVisible] = useState(false);
     const [modalText, setModalText] = useState<string>('');
+    const [jugadorAgregado, setJugadorAgregado] = useState<boolean>(false);
 
     const [nombreField, setNombreField] = useState<string>('');
     const [posicionField, setPosicionField] = useState<string>('');
@@ -58,8 +65,30 @@ export default function Agregar() {
             return ;
         }
 
-        setModalText("Agregado")
+        const jugador: Jugador = {
+            Nombre:nombreField,
+            Dorsal:Number(dorsalField),
+            Descripcion:descripcionField,
+            Nacionalidad:nacionalidadField,
+            Altura:Number(alturaField),
+            Posicion:posicionField,
+            Edad:Number(edadField),
+        }
+
+        setModalText("Agregando jugador...")
+        setJugadorAgregado(true)
         setModalVisible(true)
+
+        let promise: Promise<any>;
+
+        if (Platform.OS === "web")
+            promise = addDoc(collection(getFirestore(), "jugadores"), jugador)
+        else 
+            promise = firestore().collection('jugadores').add(jugador)
+
+        promise
+        .then(() => {setModalText("Jugador Agregado")})
+        .catch(() => {setModalText("No se pudo agregar el jugador")})
     }
 
     return (
@@ -74,7 +103,7 @@ export default function Agregar() {
                 <View style={{ flex:1, justifyContent:'center', alignItems:'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
                     <View style={{ padding:20, backgroundColor: 'white', borderRadius: 10 }}>
                         <Text>{modalText}</Text>
-                        <Button title="Cerrar" onPress={() => setModalVisible(false)} />
+                        <Button title="Cerrar" onPress={() => { setModalVisible(false); if (jugadorAgregado) router.back()}} />
                     </View>
                 </View>
             </Modal>
@@ -114,6 +143,7 @@ export default function Agregar() {
                 onValueChange={(val) => setPosicionField(val)}
                 placeholder="Posición"
             >
+                <Picker.Item label="Elegir posición" value="" />
                 <Picker.Item label="Alero" value="Alero" />
                 <Picker.Item label="Base" value="Base" />
                 <Picker.Item label="Escolta" value="Escolta" />
