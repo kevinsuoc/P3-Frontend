@@ -1,4 +1,4 @@
-import { Text, View, FlatList, Pressable, StyleSheet, Image, TextInput } from "react-native";
+import { Text, View, FlatList, Pressable, StyleSheet, Image, TextInput, Button } from "react-native";
 import { Jugador } from '../jugador'
 import { useEffect, useState } from "react";
 import { Platform } from 'react-native';
@@ -85,7 +85,6 @@ export default function index() {
     </Pressable>
   );
 
-  
   if (jugadores.length === 0)
     return  <Cargando />;
 
@@ -109,7 +108,7 @@ export default function index() {
           <Picker.Item label="Pivot" value="Pivot" />
           <Picker.Item label="Ala-Pivot" value="Ala-Pivot" />
       </Picker>
-
+      <Button title="Agregar Jugador" onPress={() => {router.navigate(`./agregar`)}}></Button>
       <FlatList
         data={jugadoresFiltrados}
         renderItem={jugadorRender} 

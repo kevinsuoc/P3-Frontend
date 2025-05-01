@@ -40,6 +40,10 @@ export default function RootLayout() {
         name="details/image/[url]" 
         options={{ title: 'Imagen de perfil', headerRight: () => <HomeButton /> }} 
       />
+      <Stack.Screen 
+        name="(agregar)/agregar"
+        options={{title: 'Añadir jugador', headerRight: () => <HomeButton/>}}
+      />
     </Stack>
   );
 }
