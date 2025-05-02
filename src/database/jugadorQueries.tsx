@@ -1,4 +1,4 @@
-import { getFirestore, doc, getDoc, deleteDoc, addDoc, collection, setDoc } from 'firebase/firestore';
+import { getFirestore, doc, getDoc, deleteDoc, addDoc, collection, updateDoc } from 'firebase/firestore';
 import firestore from '@react-native-firebase/firestore';
 import { Jugador } from '../jugador';
 
@@ -44,13 +44,39 @@ export async function firestoreAgregarJugador(platform: string, jugador: Jugador
 }
 
 
-
 export async function firestoreActualizarJugador(platform: string, jugador: Jugador): Promise<boolean> {
     if (!jugador.id) return false;
 
+    const jugadorData: any = {
+        id: jugador.id,
+        Nombre: jugador.Nombre,
+        Dorsal: jugador.Dorsal,
+        Posicion: jugador.Posicion,
+        Edad: jugador.Edad,
+        Altura: jugador.Altura,
+        Nacionalidad: jugador.Nacionalidad,
+        Descripcion: jugador.Descripcion,
+      };
+      if (jugador.Image) jugadorData.Image = jugador.Image;
+      if (jugador.Video) jugadorData.Video = jugador.Video;
+  
+      console.log("J: ", jugadorData)
+      console.log("J: ", JSON.parse(JSON.stringify(jugadorData)));
+      console.log("Jugador: ", jugador)
+      console.log("Jugador: ", JSON.parse(JSON.stringify(jugador)));
+
+      console.log("typeof jugador.Image:", typeof jugador.Image);
+      console.log("jugador.Image === undefined:", jugador.Image === undefined);
+      console.log("jugador.Image === null:", jugador.Image === null);
+      console.log("jugador.Image === '':", jugador.Image === "");
+
+      console.log("typeof j.Image:", typeof jugador.Image);
+        console.log("j.Image === undefined:", jugadorData.Image === undefined);
+        console.log("j.Image === null:", jugadorData.Image === null);
+        console.log("j.Image === '':", jugadorData.Image === "");
     try {
         if (platform === "web") {
-            await setDoc(doc(getFirestore(), "jugadores", jugador.id), jugador);
+            await updateDoc(doc(getFirestore(), "jugadores", jugador.id), jugadorData);
         } else {
             await firestore().collection("jugadores").doc(jugador.id).set(jugador);
         }
@@ -59,3 +85,29 @@ export async function firestoreActualizarJugador(platform: string, jugador: Juga
         return false;
     }
 }
+
+export interface RNFile {
+    uri: string;
+    type: string;
+    name: string;
+  }
+
+export async function penjarACloudinary(file: RNFile, resourceType: 'image' | 'video'): Promise<string> {
+    const formData = new FormData();
+    formData.append('file', file.uri)
+    formData.append('upload_preset', 'jugadores_unsigned');
+  
+    const cloudName = 'dt32twhnq';
+    const endpoint = `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`;
+  
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      body: formData
+    });
+  
+    const data = await response.json();
+  
+    if (!response.ok) throw new Error(data.error?.message || 'Upload failed');
+  
+    return data.secure_url;
+  }

@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { useLocalSearchParams } from "expo-router";
 import { Jugador } from "@/src/jugador";
-import { Platform, View, Modal, Text, Button, TextInput } from "react-native";
-import { firestoreGetJugador, firestoreActualizarJugador } from "@/src/database/jugadorQueries";
+import { Platform, View, Modal, Text, Button, TextInput, Image, StyleSheet } from "react-native";
+import { firestoreGetJugador, firestoreActualizarJugador, penjarACloudinary, RNFile } from "@/src/database/jugadorQueries";
 import Cargando from "@/src/componentes/Cargando";
 import { Picker } from "@react-native-picker/picker";
 import { validarJugador } from "@/src/validar/validarJugador";
+import * as ImagePicker from 'expo-image-picker';
 
 export default function Editar() {
     const [modalVisible, setModalVisible] = useState(false);
@@ -20,7 +21,11 @@ export default function Editar() {
     const [nacionalidadField, setNacionalidadField] = useState<string>('');
     const [descripcionField, setDescripcionField] = useState<string>('');
     const [alturaField, setAlturaField] = useState<string>('');
-    
+
+    const [image, setImage] = useState<string | null | undefined>(null);
+    const [video, setVideo] = useState<string | null | undefined>(null);
+    const [uploadedImage, setUploadedImage] = useState<RNFile | null>(null);
+    const [uploadedVideo, setUploadedVideo] = useState<RNFile | null>(null);
 
     useEffect(() => {
             firestoreGetJugador(Platform.OS, id)
@@ -34,12 +39,52 @@ export default function Editar() {
                 setNacionalidadField(data.Nacionalidad);
                 setDescripcionField(data.Descripcion);
                 setAlturaField(data.Altura);
+                setImage(data.Image);
                 setJugador(data);
             })
             .catch((err) => {console.log(err); setJugador(null)});
     }, []);
 
-    const actualizarJugador = () => {
+    const pickImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ['images'],
+            allowsEditing: false,
+            aspect: [4, 3],
+            quality: 1,
+          });
+
+        if (result.canceled)
+            return 
+        
+        setImage(result.assets[0].uri);
+        setUploadedImage({
+            uri: result.assets[0].uri,
+            type: result.assets[0].type!,
+            name: result.assets[0].fileName || "img_name"
+        })
+    }
+    
+    const pickVideo = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ['videos'],
+            allowsEditing: false,
+            aspect: [4, 3],
+            quality: 1,
+          });
+
+        if (result.canceled)
+            return 
+        
+        setVideo(result.assets[0].uri);
+        setUploadedVideo({
+            uri: result.assets[0].uri,
+            type: result.assets[0].type!,
+            name: result.assets[0].fileName || "vid_name"
+        })
+    }
+    
+
+    const actualizarJugador = async () => {
         const j: Jugador = {
             id: jugador!.id,
             Nombre:nombreField,
@@ -63,13 +108,38 @@ export default function Editar() {
         setModalText("Actualizando jugador...")
         setModalVisible(true)
 
-        firestoreActualizarJugador(Platform.OS, j)
-        .then((data) => {
-            if (data)
-                setModalText("Jugador actualizado")
-            else
-                setModalText("No se pudo actualizar")})
-        .catch(() => {setModalText("No se pudo actualizar el jugador")})
+        if (uploadedImage) {
+            try {
+                setModalText("Subiendo imagen...");
+                const imageUrl = await penjarACloudinary(uploadedImage, "image");
+                j.Image = imageUrl;
+            } catch (error) {
+                setModalText("Error subiendo imagen");
+                return;
+            }
+        }
+
+        if (uploadedVideo) {
+            try {
+                setModalText("Subiendo video...");
+                const videoURL = await penjarACloudinary(uploadedVideo, "video");
+                j.Video = videoURL;
+            } catch (error) {
+                setModalText("Error subiendo video");
+                return;
+            }
+        }
+
+        try {
+            if (await firestoreActualizarJugador(Platform.OS, j))
+                    setModalText("Jugador actualizado")
+                else 
+                    setModalText("No se pudo actualizar el jugador")      
+        } catch (error){
+            setModalText("No se pudo actualizar el jugador")
+        }
+
+
     }
 
     if (jugador == null)
@@ -134,7 +204,25 @@ export default function Editar() {
                 <Picker.Item label="Pivot" value="Pivot" />
                 <Picker.Item label="Ala-Pivot" value="Ala-Pivot" />
             </Picker>
+            <View>
+                {image && <Image source={{ uri: image }} style={styles.image} />}
+                <Button onPress={pickImage} title="Actualizar imagen"></Button>
+            </View>
+            <Text>Video: {jugador.Video? jugador.Video: uploadedVideo?.name || "No video"}</Text>
+            <Button onPress={pickVideo} title="Actualizar video"></Button>
             <Button onPress={actualizarJugador} title="Actualizar"></Button>
         </View>
     )
 }
+
+const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    image: {
+      width: 200,
+      height: 200,
+    },
+  });

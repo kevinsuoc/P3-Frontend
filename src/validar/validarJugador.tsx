@@ -27,7 +27,7 @@ export const validarJugador = (jugador: Jugador): string[] => {
         if (nacionalidadValido) errores.push(nacionalidadValido)
         const descripcionValido = validarTexto(5, 500, jugador.Descripcion, "Descripcion");
         if (descripcionValido) errores.push(descripcionValido)
-        const alturaValido = validarTexto(2, 5, jugador.Altura, "Altura");
+        const alturaValido = validarTexto(2, 10, jugador.Altura, "Altura");
         if (alturaValido) errores.push(alturaValido)
         return errores;
     }
