@@ -1,15 +1,16 @@
 import React from 'react';
 import { Stack } from "expo-router";
-import { Text, TouchableOpacity, Button } from 'react-native';
+import { Text, Button } from 'react-native';
 import { useRouter } from "expo-router";
 import { Platform } from 'react-native';
 import { getApps, initializeApp } from '@react-native-firebase/app';
 import { firebaseConfig } from '../app.config';
 
 if (Platform.OS === "web"){
-  if (getApps().length == 0)
+  if (getApps().length === 0)
     initializeApp(firebaseConfig);
 }
+
 function HeaderTitle() {
   return (
     <Text style={{

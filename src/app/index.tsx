@@ -37,13 +37,13 @@ export default function index() {
     }
     
     function onError(error: any) {console.error(error);}
-    
+  
     let subscriber: any;
     if (Platform.OS === "web")
       subscriber = onSnapshot(collection(getFirestore(), 'jugadores'), onResult, onError);
     else
       subscriber = firestore().collection('jugadores').onSnapshot(onResult, onError);
-    return () => subscriber();  
+    return () => subscriber;  
   }, [])
 
   const filtarJugadores = (nombre: string, posicion: string, jugadores: Jugador[]) => {
