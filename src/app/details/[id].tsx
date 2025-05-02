@@ -25,9 +25,9 @@ export default function Detalle() {
 
 function PlayerDataField({ fieldName, data }: { fieldName: string; data: any }) {
     return (
-        <ScrollView contentContainerStyle={{flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center", maxWidth: 600}}>
+        <View style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center", maxWidth: 600, marginVertical: 10}}>
             <Text style={{fontSize: 20}}>{fieldName}: {data}</Text>
-        </ScrollView>
+        </View>
     )
 }
 
@@ -53,7 +53,7 @@ function DetalleComponent({jugador}: {jugador: Jugador}){
     }
 
     return  (
-    <ScrollView contentContainerStyle={styles.container}>
+    <View style={styles.container}>
         <Modal
             animationType="slide"
             transparent={true}
@@ -81,7 +81,7 @@ function DetalleComponent({jugador}: {jugador: Jugador}){
             />
         </Pressable>
 
-        <ScrollView contentContainerStyle={styles.container}>
+        <ScrollView contentContainerStyle={{justifyContent: 'center',alignItems: 'center', maxWidth: 600, padding: 30}}>
             <PlayerDataField fieldName="Nombre" data={jugador.Nombre}  />
             <PlayerDataField fieldName="Dorsal" data={jugador.Dorsal}  />
             <PlayerDataField fieldName="Posicion" data={jugador.Posicion}  />
@@ -101,7 +101,7 @@ function DetalleComponent({jugador}: {jugador: Jugador}){
         <TouchableOpacity style={formStyles.button} onPress={() => verVideoPress()}>
             <Text style={formStyles.buttonText}>Ver video</Text>
         </TouchableOpacity>
-    </ScrollView>
+    </View>
     );
 }
 
