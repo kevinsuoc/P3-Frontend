@@ -1,4 +1,4 @@
-import { Text, View, FlatList, Pressable, StyleSheet, Image, TextInput, Button } from "react-native";
+import { Text, View, FlatList, Pressable, StyleSheet, Image, TextInput, Button, TouchableOpacity  } from "react-native";
 import { Jugador } from '../jugador'
 import { useEffect, useState } from "react";
 import { Platform } from 'react-native';
@@ -91,24 +91,35 @@ export default function index() {
   return (
     <View style={indexStyles.mainView}>
       <TextInput
-        onChangeText={(nombre: string) => {setNombreField(nombre); updateFilter(nombre, posicionField)}}
+        style={indexStyles.buscador}
+        onChangeText={(nombre: string) => {
+          setNombreField(nombre);
+          updateFilter(nombre, posicionField);
+        }}
         value={nombre as string}
         placeholder="Nombre o Apellido"
       />
-      <Picker 
-          onValueChange={(posicion: string) => {setPosicionField(posicion); updateFilter(nombreField, posicion)}}
-          selectedValue={posicion as string}
-          style={{ height: 50, width: 150 }}
-          itemStyle={{ color: "black" }}
+
+      <Picker
+        selectedValue={posicion as string}
+        onValueChange={(posicion: string) => {
+          setPosicionField(posicion);
+          updateFilter(nombreField, posicion);
+        }}
+        style={indexStyles.picker}
       >
-          <Picker.Item label="Todos" value="" />
-          <Picker.Item label="Alero" value="Alero" />
-          <Picker.Item label="Base" value="Base" />
-          <Picker.Item label="Escolta" value="Escolta" />
-          <Picker.Item label="Pivot" value="Pivot" />
-          <Picker.Item label="Ala-Pivot" value="Ala-Pivot" />
+        <Picker.Item label="Todos" value="" />
+        <Picker.Item label="Alero" value="Alero" />
+        <Picker.Item label="Base" value="Base" />
+        <Picker.Item label="Escolta" value="Escolta" />
+        <Picker.Item label="Pivot" value="Pivot" />
+        <Picker.Item label="Ala-Pivot" value="Ala-Pivot" />
       </Picker>
-      <Button title="Agregar Jugador" onPress={() => {router.navigate(`./agregar`)}}></Button>
+
+      <TouchableOpacity style={indexStyles.botonPrincipal} onPress={() => router.navigate('./agregar')}>
+        <Text style={indexStyles.textoBoton}>AGREGAR JUGADOR</Text>
+      </TouchableOpacity>
+
       <FlatList
         data={jugadoresFiltrados}
         renderItem={jugadorRender} 

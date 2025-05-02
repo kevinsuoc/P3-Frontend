@@ -1,6 +1,6 @@
 import React from 'react';
 import { Stack } from "expo-router";
-import { Button } from 'react-native';
+import { Text, TouchableOpacity, Button } from 'react-native';
 import { useRouter } from "expo-router";
 import { Platform } from 'react-native';
 import { getApps, initializeApp } from '@react-native-firebase/app';
@@ -9,6 +9,18 @@ import { firebaseConfig } from '../app.config';
 if (Platform.OS === "web"){
   if (getApps().length == 0)
     initializeApp(firebaseConfig);
+}
+function HeaderTitle() {
+  return (
+    <Text style={{
+      fontSize: 26,
+      fontWeight: 'bold',
+      color: '#1E3A8A',
+      marginLeft: 10
+    }}>
+      🏀 FrontMobi
+    </Text>
+  );
 }
 
 function HomeButton() {
@@ -24,10 +36,11 @@ function HomeButton() {
 export default function RootLayout() {
   return (
     <Stack>
-      <Stack.Screen 
-        name="index" 
-        options={{ title: 'FrontMobi', headerRight: () => <HomeButton /> }} 
+      <Stack.Screen
+        name="index"
+        options={{ headerTitle: () => <HeaderTitle />, headerRight: () => <HomeButton /> }}
       />
+
       <Stack.Screen 
         name="details/[id]" 
         options={{ title: 'Detalle', headerRight: () => <HomeButton /> }} 

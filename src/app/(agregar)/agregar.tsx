@@ -1,10 +1,14 @@
 import { Picker } from "@react-native-picker/picker";
 import { useState } from "react";
-import { Button, Text, TextInput, View, Modal, Platform } from "react-native";
+import {
+  Text, TextInput, View, Modal, Platform, Image, TouchableOpacity
+} from "react-native";
 import { Jugador } from "@/src/jugador";
 import { useRouter } from "expo-router";
-import { firestoreAgregarJugador } from "@/src/database/jugadorQueries";
+import { firestoreAgregarJugador, penjarACloudinary, RNFile } from "@/src/database/jugadorQueries";
 import { validarJugador } from "@/src/validar/validarJugador";
+import { formStyles } from "@/src/styles/formStyles";
+import * as ImagePicker from "expo-image-picker";
 
 export default function Agregar() {
     const router = useRouter();
@@ -21,7 +25,45 @@ export default function Agregar() {
     const [descripcionField, setDescripcionField] = useState<string>('');
     const [alturaField, setAlturaField] = useState<string>('');
 
-    const agregarJugador = () => {
+    const [image, setImage] = useState<string | null>(null);
+    const [uploadedImage, setUploadedImage] = useState<RNFile | null>(null);
+    const [video, setVideo] = useState<string | null>(null);
+    const [uploadedVideo, setUploadedVideo] = useState<RNFile | null>(null);
+  
+    
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1,
+    });
+    if (!result.canceled) {
+      const file = result.assets[0];
+      setImage(file.uri);
+      setUploadedImage({
+        uri: file.uri,
+        type: file.type || "image/jpeg",
+        name: file.fileName || "imagen.jpg",
+      });
+    }
+  };
+
+  const pickVideo = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+      quality: 1,
+    });
+    if (!result.canceled) {
+      const file = result.assets[0];
+      setVideo(file.uri);
+      setUploadedVideo({
+        uri: file.uri,
+        type: file.type || "video/mp4",
+        name: file.fileName || "video.mp4",
+      });
+    }
+  };
+
+    const agregarJugador = async () => {
         const jugador: Jugador = {
             Nombre:nombreField,
             Dorsal:Number(dorsalField),
@@ -45,71 +87,71 @@ export default function Agregar() {
         setJugadorAgregado(true)
         setModalVisible(true)
 
-        firestoreAgregarJugador(Platform.OS, jugador)
-        .then(() => {setModalText("Jugador Agregado")})
-        .catch(() => {setModalText("No se pudo agregar el jugador")})
-    }
 
-    return (
-        <View>
-            <Modal
+        try {
+            if (uploadedImage) {
+              jugador.Image = await penjarACloudinary(uploadedImage, "image");
+            }
+            if (uploadedVideo) {
+              jugador.Video = await penjarACloudinary(uploadedVideo, "video");
+            }
+      
+            await firestoreAgregarJugador(Platform.OS, jugador);
+            setModalText("Jugador Agregado");
+          } catch (e) {
+            setModalText("No se pudo agregar el jugador");
+          }
+        };
+      
+
+
+        return (
+            <View style={formStyles.container}>
+              <Modal
                 animationType="slide"
                 transparent={true}
                 visible={modalVisible}
-                onRequestClose={() => {setModalVisible(!modalVisible);}}
-                style={{backgroundColor: "black"}}
-            >
-                <View style={{ flex:1, justifyContent:'center', alignItems:'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
-                    <View style={{ padding:20, backgroundColor: 'white', borderRadius: 10 }}>
-                        <Text>{modalText}</Text>
-                        <Button title="Cerrar" onPress={() => { setModalVisible(false); if (jugadorAgregado) router.back()}} />
-                    </View>
+                onRequestClose={() => { setModalVisible(!modalVisible); }}
+              >
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                  <View style={{ padding: 20, backgroundColor: 'white', borderRadius: 10 }}>
+                    <Text>{modalText}</Text>
+                    <TouchableOpacity style={formStyles.button} onPress={() => { setModalVisible(false); if (jugadorAgregado) router.back(); }}>
+                      <Text style={formStyles.buttonText}>Cerrar</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
-            </Modal>
-            
-            <TextInput
-                onChangeText={setNombreField}
-                value={nombreField}
-                placeholder="Nombre"
-            />
-            <TextInput
-                onChangeText={setDorsalField}
-                value={dorsalField}
-                placeholder="Dorsal"
-            />
-            <TextInput
-                onChangeText={setEdadField}
-                value={edadField}
-                placeholder="Edad"
-            />
-            <TextInput
-                onChangeText={setNacionalidadField}
-                value={nacionalidadField}
-                placeholder="Nacionalidad"
-            />
-            <TextInput
-                onChangeText={setDescripcionField}
-                value={descripcionField}
-                placeholder="Descripción"
-            />
-            <TextInput
-                onChangeText={setAlturaField}
-                value={alturaField}
-                placeholder="Altura"
-            />
-            <Picker
-                selectedValue={posicionField}
-                onValueChange={(val) => setPosicionField(val)}
-                placeholder="Posición"
-            >
+              </Modal>
+        
+              <TextInput placeholder="Nombre" value={nombreField} onChangeText={setNombreField} style={formStyles.input} />
+              <TextInput placeholder="Dorsal" value={dorsalField} onChangeText={setDorsalField} keyboardType="numeric" style={formStyles.input} />
+              <TextInput placeholder="Edad" value={edadField} onChangeText={setEdadField} keyboardType="numeric" style={formStyles.input} />
+              <TextInput placeholder="Nacionalidad" value={nacionalidadField} onChangeText={setNacionalidadField} style={formStyles.input} />
+              <TextInput placeholder="Descripción" value={descripcionField} onChangeText={setDescripcionField} style={formStyles.input} />
+              <TextInput placeholder="Altura" value={alturaField} onChangeText={setAlturaField} style={formStyles.input} />
+        
+              <Picker selectedValue={posicionField} onValueChange={(val) => setPosicionField(val)} style={formStyles.picker}>
                 <Picker.Item label="Elegir posición" value="" />
                 <Picker.Item label="Alero" value="Alero" />
                 <Picker.Item label="Base" value="Base" />
                 <Picker.Item label="Escolta" value="Escolta" />
                 <Picker.Item label="Pivot" value="Pivot" />
                 <Picker.Item label="Ala-Pivot" value="Ala-Pivot" />
-            </Picker>
-            <Button onPress={agregarJugador} title="Agregar jugador"></Button>
-        </View>
-    );
-}
+              </Picker>
+        
+              <TouchableOpacity style={formStyles.button} onPress={pickImage}>
+                <Text style={formStyles.buttonText}>Seleccionar imagen</Text>
+              </TouchableOpacity>
+              {image && <Image source={{ uri: image }} style={formStyles.imagePreview} />}
+        
+              <TouchableOpacity style={formStyles.button} onPress={pickVideo}>
+                <Text style={formStyles.buttonText}>Seleccionar vídeo</Text>
+              </TouchableOpacity>
+        
+              <TouchableOpacity style={formStyles.button} onPress={agregarJugador}>
+                <Text style={formStyles.buttonText}>Agregar jugador</Text>
+              </TouchableOpacity>
+            </View>
+          );
+        }
+        
