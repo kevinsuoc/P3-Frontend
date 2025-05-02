@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Platform, Pressable, Image, Modal, Button, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Platform, Pressable, Image, Modal, Button, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Jugador } from '@/src/jugador';
 import { useState, useEffect } from 'react';
@@ -25,9 +25,9 @@ export default function Detalle() {
 
 function PlayerDataField({ fieldName, data }: { fieldName: string; data: any }) {
     return (
-        <View style={{flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center", maxWidth: "90%"}}>
+        <ScrollView contentContainerStyle={{flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center", maxWidth: 600}}>
             <Text style={{fontSize: 20}}>{fieldName}: {data}</Text>
-        </View>
+        </ScrollView>
     )
 }
 
@@ -53,7 +53,7 @@ function DetalleComponent({jugador}: {jugador: Jugador}){
     }
 
     return  (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
         <Modal
             animationType="slide"
             transparent={true}
@@ -81,13 +81,16 @@ function DetalleComponent({jugador}: {jugador: Jugador}){
             />
         </Pressable>
 
-        <PlayerDataField fieldName="Nombre" data={jugador.Nombre}  />
-        <PlayerDataField fieldName="Dorsal" data={jugador.Dorsal}  />
-        <PlayerDataField fieldName="Posicion" data={jugador.Posicion}  />
-        <PlayerDataField fieldName="Edad" data={jugador.Edad}  />
-        <PlayerDataField fieldName="Altura" data={jugador.Altura}  />
-        <PlayerDataField fieldName="Nacionalidad" data={jugador.Nacionalidad}  />
-        <PlayerDataField fieldName="Descripcion" data={jugador.Descripcion}  />
+        <ScrollView contentContainerStyle={styles.container}>
+            <PlayerDataField fieldName="Nombre" data={jugador.Nombre}  />
+            <PlayerDataField fieldName="Dorsal" data={jugador.Dorsal}  />
+            <PlayerDataField fieldName="Posicion" data={jugador.Posicion}  />
+            <PlayerDataField fieldName="Edad" data={jugador.Edad}  />
+            <PlayerDataField fieldName="Altura" data={jugador.Altura}  />
+            <PlayerDataField fieldName="Nacionalidad" data={jugador.Nacionalidad}  />
+            <PlayerDataField fieldName="Descripcion" data={jugador.Descripcion}  />
+        </ScrollView>
+
 
         <TouchableOpacity onPress={() => setBorrarModalVisible(true)} style={formStyles.button}>
             <Text style={formStyles.buttonText}>Borrar</Text>
@@ -98,7 +101,7 @@ function DetalleComponent({jugador}: {jugador: Jugador}){
         <TouchableOpacity style={formStyles.button} onPress={() => verVideoPress()}>
             <Text style={formStyles.buttonText}>Ver video</Text>
         </TouchableOpacity>
-    </View>
+    </ScrollView>
     );
 }
 
