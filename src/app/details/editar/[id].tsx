@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { useLocalSearchParams } from "expo-router";
 import { Jugador } from "@/src/jugador";
-import { Platform, View, Modal, Text, Button, TextInput, Image, StyleSheet } from "react-native";
+import { Platform, View, Modal, Text, Button, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import { firestoreGetJugador, firestoreActualizarJugador, penjarACloudinary, RNFile } from "@/src/database/jugadorQueries";
 import Cargando from "@/src/componentes/Cargando";
 import { Picker } from "@react-native-picker/picker";
 import { validarJugador } from "@/src/validar/validarJugador";
 import * as ImagePicker from 'expo-image-picker';
+import { formStyles } from "@/src/styles/formStyles";
 
 export default function Editar() {
     const [modalVisible, setModalVisible] = useState(false);
@@ -22,8 +23,6 @@ export default function Editar() {
     const [descripcionField, setDescripcionField] = useState<string>('');
     const [alturaField, setAlturaField] = useState<string>('');
 
-    const [image, setImage] = useState<string | null | undefined>(null);
-    const [video, setVideo] = useState<string | null | undefined>(null);
     const [uploadedImage, setUploadedImage] = useState<RNFile | null>(null);
     const [uploadedVideo, setUploadedVideo] = useState<RNFile | null>(null);
 
@@ -39,7 +38,6 @@ export default function Editar() {
                 setNacionalidadField(data.Nacionalidad);
                 setDescripcionField(data.Descripcion);
                 setAlturaField(data.Altura);
-                setImage(data.Image);
                 setJugador(data);
             })
             .catch((err) => {console.log(err); setJugador(null)});
@@ -56,7 +54,6 @@ export default function Editar() {
         if (result.canceled)
             return 
         
-        setImage(result.assets[0].uri);
         setUploadedImage({
             uri: result.assets[0].uri,
             type: result.assets[0].type!,
@@ -75,7 +72,6 @@ export default function Editar() {
         if (result.canceled)
             return 
         
-        setVideo(result.assets[0].uri);
         setUploadedVideo({
             uri: result.assets[0].uri,
             type: result.assets[0].type!,
@@ -166,36 +162,43 @@ export default function Editar() {
                 onChangeText={setNombreField}
                 value={nombreField}
                 placeholder="Nombre"
+                style={formStyles.input}
             />
             <TextInput
                 onChangeText={setDorsalField}
                 value={dorsalField}
                 placeholder="Dorsal"
+                style={formStyles.input}
             />
             <TextInput
                 onChangeText={setEdadField}
                 value={edadField}
                 placeholder="Edad"
+                style={formStyles.input}
             />
             <TextInput
                 onChangeText={setNacionalidadField}
                 value={nacionalidadField}
                 placeholder="Nacionalidad"
+                style={formStyles.input}
             />
             <TextInput
                 onChangeText={setDescripcionField}
                 value={descripcionField}
                 placeholder="Descripción"
+                style={formStyles.input}
             />
             <TextInput
                 onChangeText={setAlturaField}
                 value={alturaField}
                 placeholder="Altura"
+                style={formStyles.input}
             />
             <Picker
                 selectedValue={posicionField}
                 onValueChange={(val) => setPosicionField(val)}
                 placeholder="Posición"
+                style={formStyles.input}
             >
                 <Picker.Item label="Elegir posición" value="" />
                 <Picker.Item label="Alero" value="Alero" />
@@ -204,13 +207,19 @@ export default function Editar() {
                 <Picker.Item label="Pivot" value="Pivot" />
                 <Picker.Item label="Ala-Pivot" value="Ala-Pivot" />
             </Picker>
-            <View>
-                {image && <Image source={{ uri: image }} style={styles.image} />}
-                <Button onPress={pickImage} title="Actualizar imagen"></Button>
-            </View>
-            <Text>Video: {jugador.Video? jugador.Video: uploadedVideo?.name || "No video"}</Text>
-            <Button onPress={pickVideo} title="Actualizar video"></Button>
-            <Button onPress={actualizarJugador} title="Actualizar"></Button>
+
+            <TouchableOpacity onPress={pickImage} style={formStyles.button}>
+                <Text style={formStyles.buttonText}>Actualizar imagen</Text>
+                <Text style={formStyles.buttonText}>{uploadedImage? `Actualizando imagen: ${uploadedImage.name}`: ""}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={pickVideo} style={formStyles.button}>
+                <Text style={formStyles.buttonText}>Actualizar video</Text>
+                <Text style={formStyles.buttonText}>{uploadedVideo? `Actualizando video: ${uploadedVideo.name}`: ""}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={actualizarJugador} style={formStyles.button}>
+                <Text style={formStyles.buttonText}>Actualizar</Text>
+            </TouchableOpacity>
+
         </View>
     )
 }

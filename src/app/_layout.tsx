@@ -1,10 +1,11 @@
 import React from 'react';
 import { Stack } from "expo-router";
-import { Text, Button } from 'react-native';
+import { Text, TouchableOpacity } from 'react-native';
 import { useRouter } from "expo-router";
 import { Platform } from 'react-native';
 import { getApps, initializeApp } from '@react-native-firebase/app';
 import { firebaseConfig } from '../app.config';
+import { indexStyles } from '../styles/indexStyles';
 
 if (Platform.OS === "web"){
   if (getApps().length === 0)
@@ -31,7 +32,7 @@ function HomeButton() {
     router.dismissTo('/')
   };
 
-  return <Button onPress={handleHomeButton} title="Inicio" />;
+  return <TouchableOpacity onPress={handleHomeButton} style={indexStyles.botonPrincipal}><Text style={indexStyles.textoBoton}>Inicio</Text></TouchableOpacity>;
 }
 
 export default function RootLayout() {

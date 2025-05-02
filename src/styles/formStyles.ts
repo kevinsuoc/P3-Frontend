@@ -17,6 +17,8 @@ export const formStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
     marginBottom: 12,
+    maxWidth: 600,
+    alignSelf: 'center',
   },
   picker: {
     width: '90%',
@@ -28,6 +30,7 @@ export const formStyles = StyleSheet.create({
     paddingHorizontal: 10,
     justifyContent: 'center',
     marginBottom: 12,
+    alignSelf: 'center',
   },
   imagePreview: {
     width: 200,
@@ -41,11 +44,16 @@ export const formStyles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 10,
     marginVertical: 10,
+    maxWidth: 600,
+    alignSelf: 'center',
+
   },
   buttonText: {
     color: "white",
     fontWeight: "bold",
     textAlign: "center",
     fontSize: 16,
+    maxWidth: 600,
+    alignSelf: 'center',
   },
 });

@@ -25,9 +25,7 @@ export default function Agregar() {
     const [descripcionField, setDescripcionField] = useState<string>('');
     const [alturaField, setAlturaField] = useState<string>('');
 
-    const [image, setImage] = useState<string | null>(null);
     const [uploadedImage, setUploadedImage] = useState<RNFile | null>(null);
-    const [video, setVideo] = useState<string | null>(null);
     const [uploadedVideo, setUploadedVideo] = useState<RNFile | null>(null);
   
     
@@ -38,7 +36,6 @@ export default function Agregar() {
     });
     if (!result.canceled) {
       const file = result.assets[0];
-      setImage(file.uri);
       setUploadedImage({
         uri: file.uri,
         type: file.type || "image/jpeg",
@@ -54,7 +51,6 @@ export default function Agregar() {
     });
     if (!result.canceled) {
       const file = result.assets[0];
-      setVideo(file.uri);
       setUploadedVideo({
         uri: file.uri,
         type: file.type || "video/mp4",
@@ -87,12 +83,13 @@ export default function Agregar() {
         setJugadorAgregado(true)
         setModalVisible(true)
 
-
         try {
             if (uploadedImage) {
+              setModalText("Subiendo imagen...")
               jugador.Image = await penjarACloudinary(uploadedImage, "image");
             }
             if (uploadedVideo) {
+              setModalText("Subiendo video...")
               jugador.Video = await penjarACloudinary(uploadedVideo, "video");
             }
       
@@ -103,7 +100,6 @@ export default function Agregar() {
           }
         };
       
-
 
         return (
             <View style={formStyles.container}>
@@ -142,12 +138,13 @@ export default function Agregar() {
               <TouchableOpacity style={formStyles.button} onPress={pickImage}>
                 <Text style={formStyles.buttonText}>Seleccionar imagen</Text>
               </TouchableOpacity>
-              {image && <Image source={{ uri: image }} style={formStyles.imagePreview} />}
+              <Text>{uploadedImage? `Subiendo imagen: ${uploadedImage.name}`: ""}</Text>
         
               <TouchableOpacity style={formStyles.button} onPress={pickVideo}>
                 <Text style={formStyles.buttonText}>Seleccionar vídeo</Text>
               </TouchableOpacity>
-        
+              <Text>{uploadedVideo? `Subiendo video: ${uploadedVideo.name}`: ""}</Text>
+
               <TouchableOpacity style={formStyles.button} onPress={agregarJugador}>
                 <Text style={formStyles.buttonText}>Agregar jugador</Text>
               </TouchableOpacity>

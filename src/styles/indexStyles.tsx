@@ -18,6 +18,8 @@ export const indexStyles = StyleSheet.create({
     height: 1,
     backgroundColor: "#ccc",
     marginVertical: 10,
+    maxWidth: 600,
+    alignSelf: 'center',
   },
   elementoListaJugador: {
     width: "100%",
@@ -34,6 +36,9 @@ export const indexStyles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowRadius: 2,
     elevation: 2,
+    width: "100%",
+    maxWidth: 600,
+    alignSelf: 'center',
   },
   logoJugador: {
     width: 50,
@@ -53,6 +58,7 @@ export const indexStyles = StyleSheet.create({
     color: '#333',
     marginBottom: 15,
     alignSelf: 'center',
+    maxWidth: 600
   },
   buscador: {
     height: 50,
@@ -66,6 +72,7 @@ export const indexStyles = StyleSheet.create({
     color: '#333',
     marginBottom: 15,
     alignSelf: 'center',
+    maxWidth: 600
   },
   botonPrincipal: {
     backgroundColor: '#2196F3',
@@ -74,12 +81,15 @@ export const indexStyles = StyleSheet.create({
     borderRadius: 15, 
     alignItems: 'center',
     marginVertical: 10,
+    maxWidth: 600,
+    alignSelf: 'center',
   },
   
   textoBoton: {
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
+    maxWidth: 600
   }
   
   
