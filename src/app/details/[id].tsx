@@ -26,7 +26,7 @@ export default function Detalle() {
 function PlayerDataField({ fieldName, data }: { fieldName: string; data: any }) {
     return (
         <View style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center", maxWidth: 600, marginVertical: 10}}>
-            <Text style={{fontSize: 20}}>{fieldName}: {data}</Text>
+            <Text style={{fontSize: 20}}><Text style={styles.infoLabel}>{fieldName}:</Text> {data}</Text>
         </View>
     )
 }
@@ -115,5 +115,9 @@ const styles = StyleSheet.create({
       width: 200, 
       height: 200,
       resizeMode: 'contain',
+    },
+    infoLabel: {
+        fontWeight: 'bold',
+        color: '#1e90ff',
     },
   });

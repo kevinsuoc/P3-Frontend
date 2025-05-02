@@ -1,8 +1,6 @@
 import React from 'react';
-import { Stack } from "expo-router";
-import { Text, TouchableOpacity } from 'react-native';
-import { useRouter } from "expo-router";
-import { Platform } from 'react-native';
+import { Stack, useRouter } from "expo-router";
+import { Text, TouchableOpacity, Linking, Platform, View } from 'react-native';
 import { getApps, initializeApp } from '@react-native-firebase/app';
 import { firebaseConfig } from '../app.config';
 import { indexStyles } from '../styles/indexStyles';
@@ -35,33 +33,52 @@ function HomeButton() {
   return <TouchableOpacity onPress={handleHomeButton} style={indexStyles.botonPrincipal}><Text style={indexStyles.textoBoton}>Inicio</Text></TouchableOpacity>;
 }
 
+function GitHubButton() {
+  const handleGitHubButton = () => {
+      Linking.openURL('https://github.com/kevinsuoc/P3-Frontend');
+  };
+
+  return (
+    <TouchableOpacity onPress={handleGitHubButton} style={indexStyles.botonPrincipal}><Text style={indexStyles.textoBoton}>GitHub</Text></TouchableOpacity>
+  );
+}
+
+function HeaderButtons() {
+  return (
+      <View style={{ flexDirection: 'row', gap: 10 }}>
+          <HomeButton />
+          <GitHubButton />
+      </View>
+  );
+}
+
 export default function RootLayout() {
   return (
     <Stack>
       <Stack.Screen
         name="index"
-        options={{ headerTitle: () => <HeaderTitle />, headerRight: () => <HomeButton /> }}
+        options={{ headerTitle: () => <HeaderTitle />, headerRight: () => <HeaderButtons /> }}
       />
 
       <Stack.Screen 
         name="details/[id]" 
-        options={{ title: 'Detalle', headerRight: () => <HomeButton /> }} 
+        options={{ title: 'Detalle', headerRight: () => <HeaderButtons /> }} 
       />
       <Stack.Screen 
         name="multimedia/[id]" 
-        options={{ title: 'Multimedia', headerRight: () => <HomeButton /> }} 
+        options={{ title: 'Multimedia', headerRight: () => <HeaderButtons /> }} 
       />
       <Stack.Screen 
         name="details/image/[url]" 
-        options={{ title: 'Imagen de perfil', headerRight: () => <HomeButton /> }} 
+        options={{ title: 'Imagen de perfil', headerRight: () => <HeaderButtons /> }} 
       />
       <Stack.Screen 
         name="(agregar)/agregar"
-        options={{title: 'Añadir jugador', headerRight: () => <HomeButton/>}}
+        options={{title: 'Añadir jugador', headerRight: () => <HeaderButtons/>}}
       />
       <Stack.Screen 
         name="details/editar/[id]"
-        options={{title: 'Editar jugador', headerRight: () => <HomeButton/>}}
+        options={{title: 'Editar jugador', headerRight: () => <HeaderButtons/>}}
       />
     </Stack>
   );
