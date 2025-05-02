@@ -28,7 +28,7 @@ function DetalleComponent({jugador}: {jugador: Jugador}){
     const [borrarModalVisible, setBorrarModalVisible] = useState<boolean>(false);
 
     const verVideoPress = () => {
-        router.navigate(`/multimedia/${encodeURIComponent(jugador.Video ? jugador.Video : "novideo")}`);
+        router.navigate(`./multimedia/${encodeURIComponent(jugador.Video ? jugador.Video : "novideo")}`);
     };
 
     const imagePress = () => {
