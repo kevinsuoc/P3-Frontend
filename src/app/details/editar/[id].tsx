@@ -209,12 +209,10 @@ export default function Editar() {
             </Picker>
 
             <TouchableOpacity onPress={pickImage} style={formStyles.button}>
-                <Text style={formStyles.buttonText}>Actualizar imagen</Text>
-                <Text style={formStyles.buttonText}>{uploadedImage? `Actualizando imagen: ${uploadedImage.name}`: ""}</Text>
+                <Text style={formStyles.buttonText}>{uploadedImage? `Actualizando imagen: ${uploadedImage.name}`: "Actualizar imagen"}</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={pickVideo} style={formStyles.button}>
-                <Text style={formStyles.buttonText}>Actualizar video</Text>
-                <Text style={formStyles.buttonText}>{uploadedVideo? `Actualizando video: ${uploadedVideo.name}`: ""}</Text>
+                <Text style={formStyles.buttonText}>{uploadedVideo? `Actualizando video: ${uploadedVideo.name}`: "Actualizar video"}</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={actualizarJugador} style={formStyles.button}>
                 <Text style={formStyles.buttonText}>Actualizar</Text>

@@ -31,6 +31,7 @@ export const formStyles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 12,
     alignSelf: 'center',
+    maxWidth: 600
   },
   imagePreview: {
     width: 200,

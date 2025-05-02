@@ -136,14 +136,13 @@ export default function Agregar() {
               </Picker>
         
               <TouchableOpacity style={formStyles.button} onPress={pickImage}>
-                <Text style={formStyles.buttonText}>Seleccionar imagen</Text>
+                <Text style={formStyles.buttonText}>{uploadedImage? `Subiendo imagen: ${uploadedImage.name}`: "Seleccionar imagen"}</Text>
               </TouchableOpacity>
-              <Text>{uploadedImage? `Subiendo imagen: ${uploadedImage.name}`: ""}</Text>
         
               <TouchableOpacity style={formStyles.button} onPress={pickVideo}>
-                <Text style={formStyles.buttonText}>Seleccionar vídeo</Text>
+                <Text style={formStyles.buttonText}>{uploadedVideo? `Subiendo video: ${uploadedVideo.name}`: "Seleccionar vídeo"}</Text>
               </TouchableOpacity>
-              <Text>{uploadedVideo? `Subiendo video: ${uploadedVideo.name}`: ""}</Text>
+             
 
               <TouchableOpacity style={formStyles.button} onPress={agregarJugador}>
                 <Text style={formStyles.buttonText}>Agregar jugador</Text>

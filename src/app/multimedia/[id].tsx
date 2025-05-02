@@ -11,21 +11,21 @@ export default function Multimedia() {
   return <VideoComponent id={id} />;
 }
 
-function VideoComponent({id}: {id: string}) {
+function VideoComponent({ id }: { id: string }) {
   return (
-    <View style={styles.container}>
+    <View style={styles.videoWrapper}>
       <Video
-      source={{ uri: id }}
-      volume={1.0}
-      isMuted={false}
-      shouldPlay={false}
-      useNativeControls={true}
-      isLooping={false}
-      resizeMode={ResizeMode.CONTAIN}
-      style={styles.video}
-        />
+        source={{ uri: id }}
+        volume={1.0}
+        isMuted={false}
+        shouldPlay={false}
+        useNativeControls={true}
+        isLooping={false}
+        resizeMode={ResizeMode.CONTAIN}
+        style={styles.video}
+      />
     </View>
-  )
+  );
 }
 
 function NoVideoComponent(){
@@ -39,13 +39,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center', 
-    overflow: 'hidden',
+    alignItems: 'center',
+  },
+  videoWrapper: {
+    flex: 1,
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignItems: 'center',
+    backgroundColor: "black"
   },
   video: {
-    width: '70%',
-    aspectRatio: 16 / 9,
-    justifyContent: 'center',
-    alignItems: 'center', 
+      width: '100%',
+      height: '100%',
   },
-});
+})
